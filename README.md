@@ -1,0 +1,1 @@
+Pilot study evaluating spectrophotometry, Nix Color Sensor, k-means palette extraction, Pantone, and vision-language models for standardised colour cataloguing in dress and textile collections.
