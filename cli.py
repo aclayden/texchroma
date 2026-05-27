@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if args.purge_all:
         img.purge_images(purge_all=True)
     elif args.purge:
-        img.purge_images()
+        img.purge_images(args.image_dir, args.output_dir)
     elif args.single:
         img.process_single_image(args.single, config)
     else:
