@@ -1,10 +1,10 @@
 mask_threshold: 0   # use >0 for uint8 alpha, masks all transparent pixels to prevent color spill or partial removals.
-n_clusters: 6
+n_clusters: 5
 hex_colors: [
     "#FF0000",  # red
     "#0000FF",  # blue
     "#00FF00",  # green
     "#FFFF00",  # yellow
+    "#FFFFFF",  # white,
     "#000000",  # black
-    "#FFFFFF"  # white
 ]

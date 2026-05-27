@@ -1,6 +1,6 @@
 import yaml
 import argparse
-import image_processing as img
+from texchroma import image_processing as img
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
