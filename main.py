@@ -58,7 +58,7 @@ def sample_pixels(ab_pixels):
 
 def kmeans_clustering(sample, n_samples):
     kmeans = MiniBatchKMeans(
-        n_clusters=n_clusters,
+        n_clusters=n_samples,
         random_state=0,
         batch_size=4096,
         n_init=(n_samples * 2)
@@ -107,4 +107,8 @@ with open('config/config.yaml') as f:
 image_list = process_images()
 
 ab_pixels = image_prep(image_list[0],config['mask_threshold'])
+sample = sample_pixels(ab_pixels)
+labels_fg = kmeans_clustering(sample, config['n_clusters'])
+palette = convert_to_palette(labels_fg, config['hex_colours'])
+output_builder(palette, config['mask'], f'{image_list[0].split(".")[0]}.png')
 

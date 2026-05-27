@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b7cd29b-bc54-4918-bc6a-19dc4bf8c825" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/IMG_8927_remove.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/IMG_8927_remove.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/IMG_8945_remove.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/IMG_8945_remove.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +39,14 @@
     "Python tests.Doctests in common.executor": "Debug",
     "Python.Practice_Spot.executor": "Debug",
     "Python.__init__.executor": "Debug",
+    "Python.main.executor": "Run",
     "Python.ngramplotter.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/Users/alexclayden/PycharmProjects/ColorisePractice",
+    "last_opened_file_path": "/Users/alexclayden/PycharmProjects/textile-colour-methods",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
