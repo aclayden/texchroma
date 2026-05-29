@@ -5,22 +5,27 @@ import matplotlib.colors as mcolors
 import yaml
 import os
 
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 from skimage.color import rgb2lab
 
 def removebg(image_file):
     # Iterable, removes backfround from target file and resaves as png.
     filename = os.path.splitext(image_file)[0]
     input_image = Image.open(image_file).convert("RGBA")
-    output_image = remove(input_image)
-    output_name = f'{filename}_remove.png'
-    output_image.save(output_name)
-    return output_name
+    if not os.path.isfile(image_file):
+        raise FileNotFoundError(f"Image file not found: {image_file}")
+    else:
+        output_image = remove(input_image)
+        output_name = f'{filename}_remove.png'
+        output_image.save(output_name)
+        return output_name
 
 def image_prep(ind_image, mask_threshold):
     # Load RGBA image with PIL
     # Converts RGBA PNG into color and transparency array
     image_file = Image.open(ind_image).convert("RGBA")
+    if not ind_image.lower().endswith(('.png', '.jpg', '.jpeg', '.tif', '.tiff')):
+        raise ValueError(f"Unsupported file type: {ind_image}")
     img_arr = np.array(image_file).astype(np.uint8)   # shape: (H, W, 4)
 
 
@@ -47,34 +52,43 @@ def image_prep(ind_image, mask_threshold):
     
     return ab_pixels, mask
 
-def sample_pixels(ab_pixels):
+def sample_pixels(ab_pixels, rand_int):
     # Sampling for speed
     sample_size = 50000
     n_samples = min(sample_size, ab_pixels.shape[0])
 
+    np.random.seed(rand_int)
     idx = np.random.choice(ab_pixels.shape[0], n_samples, replace=False)
     sample = ab_pixels[idx]
     return sample
 
-def kmeans_clustering(sample, ab_pixels, n_clusters):
-    kmeans = MiniBatchKMeans(
-        n_clusters=n_clusters,
-        random_state=0,
-        batch_size=4096,
-        n_init=(n_clusters * 2)
-    )
+def kmeans_clustering(sample, ab_pixels, n_clusters, rand_int):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=rand_int)
+
+    if n_clusters < 1:
+        raise ValueError(f"n_clusters must be at least 1, got {n_clusters}")
+    if ab_pixels.shape[0] < n_clusters:
+        raise ValueError(f"Fewer foreground pixels ({ab_pixels.shape[0]}) than n_clusters ({n_clusters})")
     kmeans.fit(sample)
     labels_fg = kmeans.predict(ab_pixels)  # predict on full set, not sample
-    return labels_fg
+    return kmeans, labels_fg
 
 def convert_to_palette(hex_colors):
-    palette = (np.array([mcolors.to_rgb(c) for c in hex_colors]) * 255).astype(np.uint8)  # (6,3)
+    try:
+        palette = (np.array([mcolors.to_rgb(c) for c in hex_colors]) * 255).astype(np.uint8)  # (6,3)
+    except ValueError as e:
+        raise ValueError(f"Invalid hex colour in palette: {e}")
     return palette
 
 def output_builder(palette, labels_fg, mask, filename, output_dir):
     h, w = mask.shape
     segmented_rgba = np.zeros((h, w, 4), dtype=np.uint8)
 
+    if len(palette) != (labels_fg.max() + 1):
+        raise ValueError(f"Palette length {len(palette)} does not match number of cluster labels {labels_fg.max() + 1}")
+    if not os.path.isdir(output_dir):
+        raise FileNotFoundError(f"Output directory does not exist: {output_dir}")
+    
     # Fill RGB only on garment pixels
     segmented_rgba[..., 3] = 0  # transparent background by default
     segmented_rgba[mask, :3] = palette[labels_fg]
@@ -91,16 +105,21 @@ def process_images(image_dir):
         if filename.endswith("_remove.png"):
             continue
         else:
+            if not filename.lower().endswith(('.jpg', '.jpeg', '.png', '.tif', '.tiff')):
+                continue
             filepath = os.path.join(image_dir, filename)
             output_name = removebg(filepath)
             input_list.append(output_name)
+    if not input_list:
+        raise ValueError(f"No supported image files found in {image_dir}")
     return input_list
 
 def process_single_image(image_file, config, output_dir):
+    rand_int = config['rand_int']
     ab_pixels, mask = image_prep(image_file, config['mask_threshold'])
-    sample = sample_pixels(ab_pixels)
-    labels_fg = kmeans_clustering(sample, ab_pixels, config['n_clusters'])  # pass full ab_pixels
-    palette = convert_to_palette(config['hex_colors'])
+    sample = sample_pixels(ab_pixels, rand_int)
+    kmeans, labels_fg = kmeans_clustering(sample, ab_pixels, config['n_clusters'], rand_int)
+    palette = convert_to_palette(config['hex_colors'][:config['n_clusters']])
     output_builder(palette, labels_fg, mask, image_file, output_dir)
 
 def process_all_images(image_dir, output_dir):

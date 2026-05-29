@@ -1,6 +1,8 @@
 mask_threshold: 0   # use >0 for uint8 alpha, masks all transparent pixels to prevent color spill or partial removals.
 n_clusters: 5
 hex_colors: [
+    # These colours were chosen for their distinctiveness when viewed in contrast to one another.
+    # Any colours will do, and users may choose a sub-set for <6 n_clusters if desired.
     "#FF0000",  # red
     "#0000FF",  # blue
     "#00FF00",  # green
@@ -8,3 +10,4 @@ hex_colors: [
     "#FFFFFF",  # white,
     "#000000",  # black
 ]
+random_state: 17 # Any int will do here
