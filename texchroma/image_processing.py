@@ -5,8 +5,7 @@ import yaml
 import matplotlib.colors as mcolors
 from PIL import Image
 from sklearn.cluster import KMeans
-from skimage.color import rgb2lab
-
+import skimage.color as sc
 
 # ---------------------------------------------------------------------------
 # Background removal
@@ -225,3 +224,13 @@ def purge_images(image_dir, output_dir, purge_all=False):
                     print(f"Deleted: {filename}")
                 except Exception as e:
                     print(f"Failed to delete '{filename}': {e}")
+
+def centroid_to_patch(lab_centroid, size=200):
+    # CIELAB → sRGB
+    lab = np.array([[lab_centroid]], dtype=np.float64)  # shape (1,1,3)
+    rgb = sc.lab2rgb(lab)  # 0–1 float
+    rgb_uint8 = (rgb[0, 0] * 255).astype(np.uint8)
+    img = Image.fromarray(
+        np.full((size, size, 3), rgb_uint8, dtype=np.uint8), 'RGB'
+    )
+    return img
